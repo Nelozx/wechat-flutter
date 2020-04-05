@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'contacts_page.dart';
 import 'discover/discover_page.dart';
 import 'chat_page.dart';
 import 'mine_page.dart';
+import 'contacts/contacts_page.dart';
 
 class RootPage extends StatefulWidget {
   @override
@@ -24,9 +24,10 @@ class _RootPageState extends State<RootPage> {
           });
         },
         currentIndex: _currentIdx,
+        selectedFontSize: 12,
         // have fixed width
         type: BottomNavigationBarType.fixed,
-        // 没有设置fixedColor，使用主题色
+        // 没有设置fixedColor，文字使用主题色
         fixedColor: Colors.green,
         items: <BottomNavigationBarItem>[
 
@@ -53,7 +54,6 @@ class _RootPageState extends State<RootPage> {
           ),
         ],
       ),
-
     );
   }
 }

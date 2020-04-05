@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wechat_flutter/const.dart';
 
 class DiscoverChildPage extends StatefulWidget {
   final String title;
@@ -15,6 +16,7 @@ class _DiscoverChildPageState extends State<DiscoverChildPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: WeChatThemeColor,
         title: Text(widget.title),
       ),
 

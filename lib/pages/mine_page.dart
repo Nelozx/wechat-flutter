@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wechat_flutter/const.dart';
 import 'package:wechat_flutter/pages/discover/discover_cell.dart';
 
 class MinePage extends StatefulWidget {
@@ -84,7 +85,7 @@ class _MinePageState extends State<MinePage> {
         child: Stack(
           children: <Widget>[
             Container(
-              color: Color.fromRGBO(220, 220, 220, 1),
+              color: WeChatThemeColor,
               height: 900,
               child: MediaQuery.removePadding(
                   removeTop: true,

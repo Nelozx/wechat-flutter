@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wechat_flutter/const.dart';
 import 'discover_cell.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -7,7 +8,7 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  Color _themColor = Color.fromRGBO(220, 220, 220, 1.0);
+  Color _themColor = WeChatThemeColor;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
