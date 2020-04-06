@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wechat_flutter/const.dart';
 import 'package:wechat_flutter/pages/contacts/contacts_data.dart';
+import 'package:wechat_flutter/pages/contacts/index_bar.dart';
 import 'package:wechat_flutter/pages/discover/discover_child_page.dart';
+
+
 
 class ContactsPage extends StatefulWidget {
   @override
@@ -10,6 +13,12 @@ class ContactsPage extends StatefulWidget {
 
 class _ContactsPageState extends State<ContactsPage> {
   final List<Contacts> _listDatas = [];
+  final Map _groupOffsetMap = {
+    INDEX_WORDS[0] : 0.0,
+    INDEX_WORDS[1] : 0.0
+  };
+
+  ScrollController _scrollController;
 
   final List<Contacts> _headerData = [
     Contacts(imageUrl: 'images/新的朋友.png', name: '新的朋友'),
@@ -26,6 +35,22 @@ class _ContactsPageState extends State<ContactsPage> {
     _listDatas.sort((Contacts a, Contacts b) {
       return a.indexLetter.compareTo(b.indexLetter);
     });
+    _scrollController = ScrollController();
+
+    var _groupOffset = 54.0 * 4;
+    for (int i = 0; i < _listDatas.length; i++) {
+      if (i < 1) { // 第一个一定是头部
+        _groupOffsetMap.addAll({_listDatas[i].indexLetter:_groupOffset});
+        _groupOffset += 84;
+      } else if (_listDatas[i].indexLetter == _listDatas[i -1].indexLetter) {
+        // 如果没有头就加54
+        _groupOffset += 54;
+      } else { // 都是有头部的
+        _groupOffsetMap.addAll({_listDatas[i].indexLetter:_groupOffset});
+        _groupOffset += 84;
+      }
+
+    }
   }
 
 
@@ -41,7 +66,6 @@ class _ContactsPageState extends State<ContactsPage> {
     // 如果当前和上一个Cell的IndexLetter一样，就不显示头
     if (index > _headerData.length &&
         _listDatas[index - 4].indexLetter == _listDatas[index - 5].indexLetter) {
-
       return _ContactsCell(
         imageUrl: _listDatas[index - 4].imageUrl,
         name: _listDatas[index - 4].name,
@@ -81,13 +105,31 @@ class _ContactsPageState extends State<ContactsPage> {
         ],
 
       ),
-      body: Container(
-        color: WeChatThemeColor,
-        child: ListView.builder(
+      body: Stack(
+        children: <Widget>[
+          Container(
+          color: WeChatThemeColor,
+          child: ListView.builder(
+            controller: _scrollController,
             itemCount: _headerData.length + _listDatas.length,
             itemBuilder: _itemForRow,
-        ),
-      ),
+          ),
+        ),// List
+          IndexBar(
+            indexBarCallBack: (String str){
+              print('当前选中的是:$str');
+              if (_groupOffsetMap[str] != null) {
+                _scrollController.animateTo(
+                  _groupOffsetMap[str],
+                  duration: Duration(milliseconds: 10),
+                  curve: Curves.easeIn,
+                );
+              }
+            },
+
+          )// 索引条
+        ],
+      )
     );
   }
 }
