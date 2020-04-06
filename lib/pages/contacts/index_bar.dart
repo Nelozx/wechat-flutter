@@ -28,6 +28,10 @@ class _IndexBarState extends State<IndexBar> {
   Color _textColor = Colors.black;
   var _selectorIndex = -1;
 
+  double _indicatorY = 0.0;
+  String _indicatorText = 'A';
+  bool _indicatorHidden = true;
+
   @override
   Widget build(BuildContext context) {
     List<Widget> words = [];
@@ -46,45 +50,75 @@ class _IndexBarState extends State<IndexBar> {
       right: 0.0,
       top: ScreenHeight(context) / 8,
       height: ScreenHeight(context) * 0.5,
-      width: 30,
-      child: GestureDetector(
-        child: Container(
-          color: _bgColor,
-          child: Column(
-            children: words,
+      width: 120,
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: 100,
+//            color: Colors.blueAccent,
+            alignment: Alignment(0, _indicatorY),
+            child: _indicatorHidden ? null : Stack(
+              alignment: Alignment(-0.2, 0),
+              children: <Widget>[
+                Image(image: AssetImage('images/气泡.png'), width: 60,),
+                Text(_indicatorText,
+                  style: TextStyle(color: Colors.white, fontSize: 35),
+                )
+              ],
+            ),
           ),
-        ),
-        onVerticalDragUpdate: (DragUpdateDetails details) {
-          int index = getIndex(context, details.globalPosition);
-          // 计算外界回调
-          if (index != _selectorIndex) {
-            _selectorIndex = index;
-            setState(() {});
-            widget.indexBarCallBack(INDEX_WORDS[index]);
-          }
-        },
-        onVerticalDragDown: (DragDownDetails details) {
-          int index = getIndex(context, details.globalPosition);
-          // 计算外界回调
-          if (index != _selectorIndex) {
-            _selectorIndex = index;
-            setState(() {});
-            widget.indexBarCallBack(INDEX_WORDS[index]);
-          }
-          setState(() {
-            _bgColor = Color.fromRGBO(1, 1, 1, 0.5);
-            _textColor = Colors.white;
-          });
-        },
-        onVerticalDragEnd: (DragEndDetails details) {
-          _bgColor = Color.fromRGBO(1, 1, 1, 0.0);
-          _textColor = Colors.black;
-          _selectorIndex = -1;
-          setState(() {});
+          GestureDetector(
+            child: Container(
+              width: 20,
+              color: _bgColor,
+              child: Column(
+                children: words,
+              ),
+            ),
+            onVerticalDragUpdate: (DragUpdateDetails details) {
+              int index = getIndex(context, details.globalPosition);
+              // 计算外界回调
+              if (index != _selectorIndex) {
+                _selectorIndex = index;
+                setState(() {});
+                widget.indexBarCallBack(INDEX_WORDS[index]);
+              }
 
-        },
+              // 气泡的显示
+              _indicatorText = INDEX_WORDS[index];
+              _indicatorY = 2.2 / (INDEX_WORDS.length -1) * index - 1.1;
+              _indicatorHidden = false;
+              setState(() {});
+            },
+            onVerticalDragDown: (DragDownDetails details) {
+              int index = getIndex(context, details.globalPosition);
+              // 计算外界回调
+              if (index != _selectorIndex) {
+                _selectorIndex = index;
+                setState(() {});
+                widget.indexBarCallBack(INDEX_WORDS[index]);
+              }
+              // 气泡的显示
+              _indicatorText = INDEX_WORDS[index];
+              _indicatorY = 2.2 / (INDEX_WORDS.length -1) * index - 1.1;
+              _indicatorHidden = false;
+              setState(() {
+                _bgColor = Color.fromRGBO(1, 1, 1, 0.5);
+                _textColor = Colors.white;
+              });
+            },
+            onVerticalDragEnd: (DragEndDetails details) {
+              _indicatorHidden = true;
+              _bgColor = Color.fromRGBO(1, 1, 1, 0.0);
+              _textColor = Colors.black;
+              _selectorIndex = -1;
+              setState(() {});
 
-      )
+            },
+
+          )
+        ],
+      ),
     );
   }
 }
