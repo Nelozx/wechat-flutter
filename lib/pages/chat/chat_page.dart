@@ -41,8 +41,6 @@ with AutomaticKeepAliveClientMixin<ChatPage>{
 
 
   Future<List<Chat>> getDatas() async {
-
-    print('-------------------');
     _cancelConnect = false;
     final response = await http.get(chat_list_url);
     print(response.statusCode);
@@ -108,9 +106,10 @@ with AutomaticKeepAliveClientMixin<ChatPage>{
         ],
       ),
       body: Container(
-        child: _datas.length == 0 ? Center(child: Text('Loading...'),)
-            : ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
+        child: _datas.length == 0 ? Center(child: Text('Loading...'),) :
+        ListView.builder (
+            itemCount: _datas.length,
+            itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   title: Text(_datas[index].name),
                   subtitle: Container(
@@ -124,7 +123,7 @@ with AutomaticKeepAliveClientMixin<ChatPage>{
                     backgroundImage: NetworkImage(_datas[index].imageUrl),
                   ),
                 );
-              }
+            }
         )
       )
     );
