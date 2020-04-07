@@ -11,7 +11,8 @@ class ContactsPage extends StatefulWidget {
   _ContactsPageState createState() => _ContactsPageState();
 }
 
-class _ContactsPageState extends State<ContactsPage> {
+class _ContactsPageState extends State<ContactsPage>
+with AutomaticKeepAliveClientMixin<ContactsPage> {
   final List<Contacts> _listDatas = [];
   final Map _groupOffsetMap = {
     INDEX_WORDS[0] : 0.0,
@@ -26,6 +27,9 @@ class _ContactsPageState extends State<ContactsPage> {
     Contacts(imageUrl: 'images/标签.png', name: '标签'),
     Contacts(imageUrl: 'images/公众号.png', name: '公众号'),
   ];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -83,6 +87,7 @@ class _ContactsPageState extends State<ContactsPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('通讯录'),

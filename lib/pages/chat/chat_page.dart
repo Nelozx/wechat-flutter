@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:wechat_flutter/const.dart';
-
+import 'package:wechat_flutter/pages/chat/chat_data.dart';
+import 'package:http/http.dart' as http;
 class ChatPage extends StatefulWidget {
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -29,9 +32,61 @@ List<PopupMenuItem<String>> _buildPopupMenuItem(BuildContext context) {
 }
 
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage>
+with AutomaticKeepAliveClientMixin<ChatPage>{
+  // 聊天的界面的数据
+  List<Chat> _datas = [];
+  // 多次请求
+  bool _cancelConnect = false;
+
+
+  Future<List<Chat>> getDatas() async {
+
+    print('-------------------');
+    _cancelConnect = false;
+    final response = await http.get(chat_list_url);
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      // 获取响应数据转化成Map类型
+      List<Chat> chatList = responseBody['chat_list']
+          .map<Chat>((item) => Chat.formJson(item))
+          .toList();
+      return chatList;
+    } else {
+      throw Exception('statusCode:${response.statusCode}');
+    }
+  }
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    getDatas().then((List<Chat> datas) {
+      if (!_cancelConnect) {
+        setState(() {
+          _datas = datas;
+        });
+      }
+
+    }).catchError((e) {
+      print(e);
+    }).timeout(Duration(seconds: 6)).catchError((timeout) {
+      _cancelConnect = true;
+      print('超时:$timeout');
+    });
+  }
+
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         // iOS默认剧中，android默认据左
@@ -52,9 +107,26 @@ class _ChatPageState extends State<ChatPage> {
           )
         ],
       ),
-      body: Center(
-        child: Text('微信页面'),
-      ),
+      body: Container(
+        child: _datas.length == 0 ? Center(child: Text('Loading...'),)
+            : ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Text(_datas[index].name),
+                  subtitle: Container(
+                    height: 20, width: 20,
+                    child: Text(
+                      _datas[index].message,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  leading: CircleAvatar (
+                    backgroundImage: NetworkImage(_datas[index].imageUrl),
+                  ),
+                );
+              }
+        )
+      )
     );
   }// 创建item
 }
