@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wechat_flutter/const.dart';
 import 'package:wechat_flutter/pages/chat/chat_data.dart';
 import 'package:http/http.dart' as http;
+import 'package:wechat_flutter/pages/chat/search_bar.dart';
 class ChatPage extends StatefulWidget {
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -82,11 +83,33 @@ with AutomaticKeepAliveClientMixin<ChatPage>{
   @override
   bool get wantKeepAlive => true;
 
+  // 返回cell
+  Widget _buildItemForRow(BuildContext context, int index) {
+    if (index == 0) {
+      return SearchCell(datas: _datas,);
+    }
+    return ListTile(
+      title: Text(_datas[index -1].name),
+      subtitle: Container(
+        height: 20, width: 20,
+        child: Text(
+          _datas[index -1].message,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      leading: CircleAvatar (
+        backgroundImage: NetworkImage(_datas[index -1].imageUrl),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         // iOS默认剧中，android默认据左
         centerTitle: true,
         backgroundColor: WeChatThemeColor,
@@ -109,21 +132,7 @@ with AutomaticKeepAliveClientMixin<ChatPage>{
         child: _datas.length == 0 ? Center(child: Text('Loading...'),) :
         ListView.builder (
             itemCount: _datas.length,
-            itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(_datas[index].name),
-                  subtitle: Container(
-                    height: 20, width: 20,
-                    child: Text(
-                      _datas[index].message,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  leading: CircleAvatar (
-                    backgroundImage: NetworkImage(_datas[index].imageUrl),
-                  ),
-                );
-            }
+            itemBuilder: _buildItemForRow,
         )
       )
     );

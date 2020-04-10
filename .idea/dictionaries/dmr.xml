@@ -2,6 +2,7 @@
   <dictionary name="dmr">
     <words>
       <w>datas</w>
+      <w>strs</w>
     </words>
   </dictionary>
 </component>
